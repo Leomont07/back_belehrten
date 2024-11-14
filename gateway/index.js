@@ -1,9 +1,11 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const morgan = require('morgan');
-const cors = require('cors'); // Importa el paquete cors
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
+
 
 // Configuración de CORS para permitir solicitudes desde el frontend
 app.use(cors({
