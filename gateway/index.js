@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const cors = require('cors'); // Importa el paquete cors
 
 const app = express();
+app.use(cors());
+
 
 // Configuración de CORS para permitir solicitudes desde el frontend
 app.use(cors({
