@@ -11,6 +11,7 @@ const User = sequelize.define('User', {
     apellido_pat: { type: DataTypes.STRING, allowNull: false, unique: false },
     apellido_mat: { type: DataTypes.STRING, allowNull: false, unique: false },
     edad: { type: DataTypes.INTEGER, allowNull: false, unique: false },
+    tipo: { type: DataTypes.INTEGER, allowNull: false, unique: false, defaultValue: 1 },
     correo: { type: DataTypes.STRING, allowNull: false, unique: true },
     fecha_registro: { type: DataTypes.DATE, allowNull: false, unique: true },
     psw: { type: DataTypes.STRING, allowNull: false },

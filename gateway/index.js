@@ -7,6 +7,13 @@ const app = express();
 app.use(cors());
 
 
+// Configuración de CORS para permitir solicitudes desde el frontend
+app.use(cors({
+    origin: 'http://localhost:5173', // Cambia a la URL de tu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Configuración de morgan para registrar todas las peticiones al gateway
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
@@ -30,12 +37,12 @@ app.use('/users', createProxyMiddleware({
     },
 }));
 
-// Servicio de usuarios (users)
+// Servicio de tests (tests)
 app.use('/tests', createProxyMiddleware({
-    target: 'http://localhost:3003', // Dirección del microservicio de usuarios
+    target: 'http://localhost:3003', // Dirección del microservicio de tests
     changeOrigin: true,
     pathRewrite: {
-        '^/tests': '/', // Reescribe la ruta para el microservicio de usuarios
+        '^/tests': '/', // Reescribe la ruta para el microservicio de tests
     },
 }));
 
