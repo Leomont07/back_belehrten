@@ -1,8 +1,11 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
+
 
 // Configuración de morgan para registrar todas las peticiones al gateway
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
