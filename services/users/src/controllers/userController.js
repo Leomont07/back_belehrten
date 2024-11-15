@@ -135,12 +135,14 @@ exports.restorePassword = async (req, res) => {
             }
         });
 
-        await transporter.sendMail({
-            to: correo,
-            from: process.env.EMAIL_USER,
-            subject: 'Restablecimiento de contraseña',
-            html: `<p>Para restablecer tu contraseña, sigue el siguiente enlace:</p><a href="http://localhost:3000/users/verificar?token=${resetToken}">Reestablecer Contraseña</a>`,
-        });
+        const mailOptions = {
+            from: 'leonsiu@lexius.mx',
+            to: user.correo,
+            subject: 'Reestablecimiento de contraseña',
+            html: `<p>Para restablecer tu contraseña, sigue el siguiente enlace:</p><a href="http://localhost:5173/updatePassword?token=${resetToken}">Reestablecer Contraseña</a>`
+        };
+
+        await transporter.sendMail(mailOptions);
 
         res.json({ message: 'Enlace de restablecimiento enviado a tu correo.' });
     } catch (error) {
@@ -150,7 +152,7 @@ exports.restorePassword = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
     try {
-        const { token, newPassword } = req.body;
+        const { token, psw } = req.body;
 
         // Encontrar al usuario por el token y verificar que el token no ha expirado
         const user = await User.findOne({
@@ -163,12 +165,13 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ error: 'Token inválido o expirado' });
         }
 
+        const hashedPassword = await bcrypt.hash(psw, 10);
+
         // Actualizar la contraseña y eliminar el token de restablecimiento
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.psw = hashedPassword;
-        user.resetPasswordToken = null;
-        user.resetPasswordExpires = null;
-        await user.save();
+        await user.update({
+            psw: hashedPassword,
+            passwordToken: null,
+        });
 
         res.json({ message: 'Contraseña restablecida correctamente' });
     } catch (error) {
