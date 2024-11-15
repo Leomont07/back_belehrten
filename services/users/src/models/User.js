@@ -20,6 +20,7 @@ const User = sequelize.define('User', {
     tipo: { type: DataTypes.INTEGER, allowNull: false },
     isLogin: { type: DataTypes.INTEGER, allowNull: false },
     passwordToken: { type: DataTypes.STRING, allowNull: true },
+    status: { type: DataTypes.INTEGER, allowNull: false },
 }, {
     tableName: 'usuario',
     timestamps: false 
