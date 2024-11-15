@@ -16,7 +16,10 @@ const User = sequelize.define('User', {
     fecha_registro: { type: DataTypes.DATE, allowNull: false, unique: true },
     psw: { type: DataTypes.STRING, allowNull: false },
     isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
-    verificationToken: { type: DataTypes.STRING, allowNull: true }
+    verificationToken: { type: DataTypes.STRING, allowNull: true },
+    tipo: { type: DataTypes.INTEGER, allowNull: false },
+    isLogin: { type: DataTypes.INTEGER, allowNull: false },
+    passwordToken: { type: DataTypes.STRING, allowNull: true },
 }, {
     tableName: 'usuario',
     timestamps: false 

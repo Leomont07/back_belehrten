@@ -95,10 +95,84 @@ exports.login = async (req, res) => {
             return res.status(403).json({ error: 'Tu cuenta no ha sido verificada. Revisa tu correo electrónico.' });
         }
 
+        if (user.isLogin === 1) {
+            return res.status(403).json({ error: 'Ya hay una sesión activa con esta cuenta.' });
+        }
+
+        await User.update({ isLogin: 1 }, { where: { id_usuario: user.id_usuario } });
+
         const token = jwt.sign({ id: user.id_usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ message: 'Login exitoso', token });
+        res.json({ message: 'Login exitoso', token, user});
     } catch (error) {
         res.status(500).json({ error: 'Error al iniciar sesión: ' + error });
+    }
+};
+
+exports.restorePassword = async (req, res) => {
+    try {
+        const { correo } = req.body;
+        const user = await User.findOne({ where: { correo } });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        // Generar un token de restablecimiento
+        const resetToken = crypto.randomBytes(32).toString('hex');
+
+        // Guardar el token y su expiración en el usuario
+        user.passwordToken = resetToken;
+        await user.save();
+
+        // Configurar y enviar el correo con el enlace de restablecimiento
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.ionos.mx',
+            port: 587,
+            secure: false,
+            auth: {
+                user: 'leonsiu@lexius.mx',
+                pass: 'Leonardocr7.',
+            }
+        });
+
+        await transporter.sendMail({
+            to: correo,
+            from: process.env.EMAIL_USER,
+            subject: 'Restablecimiento de contraseña',
+            html: `<p>Para restablecer tu contraseña, sigue el siguiente enlace:</p><a href="http://localhost:3000/users/verificar?token=${resetToken}">Reestablecer Contraseña</a>`,
+        });
+
+        res.json({ message: 'Enlace de restablecimiento enviado a tu correo.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al enviar el enlace de restablecimiento: ' + error.message });
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+
+        // Encontrar al usuario por el token y verificar que el token no ha expirado
+        const user = await User.findOne({
+            where: {
+                passwordToken: token,
+            },
+        });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Token inválido o expirado' });
+        }
+
+        // Actualizar la contraseña y eliminar el token de restablecimiento
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.psw = hashedPassword;
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
+        await user.save();
+
+        res.json({ message: 'Contraseña restablecida correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al restablecer la contraseña: ' + error.message });
     }
 };
 
