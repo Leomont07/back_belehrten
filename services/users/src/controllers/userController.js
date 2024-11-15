@@ -8,7 +8,7 @@ require('dotenv').config();
 
 exports.users = async (req, res) => {
     try {
-        res.status(200).json({ message: 'Servicio corriendo de manera correcta'});
+        res.status(200).json({ message: 'Servicio corriendo de manera correcta' });
     } catch (error) {
         res.status(500).json({ error: 'Error al registrar usuario' });
     }
@@ -31,7 +31,7 @@ exports.register = async (req, res) => {
 
         res.status(201).json({ message: 'Usuario registrado exitosamente. Verifica tu correo para activar tu cuenta.', user });
     } catch (error) {
-        res.status(500).json({ error: 'Error al registrar usuario' + error});
+        res.status(500).json({ error: 'Error al registrar usuario' + error });
     }
 };
 
@@ -102,7 +102,7 @@ exports.login = async (req, res) => {
         await User.update({ isLogin: 1 }, { where: { id_usuario: user.id_usuario } });
 
         const token = jwt.sign({ id: user.id_usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ message: 'Login exitoso', token, user});
+        res.json({ message: 'Login exitoso', token, user });
     } catch (error) {
         res.status(500).json({ error: 'Error al iniciar sesión: ' + error });
     }
@@ -194,8 +194,8 @@ exports.getAllUsers = async (req, res) => {
 exports.updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre, apellido_pat, apellido_mat, edad, psw, correo } = req.body;
-        
+        const { nombre, apellido_pat, apellido_mat, edad, psw } = req.body;
+
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -212,7 +212,6 @@ exports.updateUser = async (req, res) => {
             apellido_mat: apellido_mat || user.apellido_mat,
             edad: edad || user.edad,
             psw: psw ? hashedPassword : user.psw,
-            correo: correo || user.correo,
         });
 
         res.status(200).json({ message: 'Usuario actualizado correctamente', user });
@@ -226,13 +225,15 @@ exports.deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findByPk(id);
-        
+
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
+        await user.update({
+            status: 0,
+        });
 
-        await user.destroy();
-        res.status(200).json({ message: 'Usuario eliminado correctamente' });
+        res.status(200).json({ message: 'Usuario eliminado correctamente', user });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar usuario: ' + error });
     }

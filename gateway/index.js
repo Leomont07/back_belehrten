@@ -1,11 +1,10 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const morgan = require('morgan');
-const cors = require('cors');
+const cors = require('cors'); // Importa el paquete cors
 
 const app = express();
 app.use(cors());
-
 
 // Configuración de morgan para registrar todas las peticiones al gateway
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
@@ -26,16 +25,16 @@ app.use('/users', createProxyMiddleware({
     target: 'http://localhost:3002', // Dirección del microservicio de usuarios
     changeOrigin: true,
     pathRewrite: {
-        '^/users': '/ususario', // Reescribe la ruta para el microservicio de usuarios
+        '^/users': '/', // Reescribe la ruta para el microservicio de usuarios
     },
 }));
 
-// Servicio de usuarios (users)
+// Servicio de tests (tests)
 app.use('/tests', createProxyMiddleware({
-    target: 'http://localhost:3003', // Dirección del microservicio de usuarios
+    target: 'http://localhost:3003', // Dirección del microservicio de tests
     changeOrigin: true,
     pathRewrite: {
-        '^/tests': '/', // Reescribe la ruta para el microservicio de usuarios
+        '^/tests': '/', // Reescribe la ruta para el microservicio de tests
     },
 }));
 

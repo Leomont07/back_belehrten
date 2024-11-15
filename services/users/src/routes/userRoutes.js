@@ -10,7 +10,7 @@ router.get('/verificar', userController.verifyEmail);
 router.post('/restore', userController.restorePassword);
 router.post('/reset', userController.resetPassword);
 router.post('/login', userController.login);
-router.put('/users/:id', userController.updateUser);
-router.delete('/users/:id', userController.deleteUser);
+router.put('/:id', userController.updateUser);
+router.put('/delete/:id', userController.deleteUser);
 
 module.exports = router;
