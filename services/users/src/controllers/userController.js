@@ -191,7 +191,7 @@ exports.getAllUsers = async (req, res) => {
 exports.updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre, apellido_pat, apellido_mat, edad, psw, correo } = req.body;
+        const { nombre, apellido_pat, apellido_mat, edad, psw} = req.body;
         
         const user = await User.findByPk(id);
         if (!user) {
@@ -209,7 +209,6 @@ exports.updateUser = async (req, res) => {
             apellido_mat: apellido_mat || user.apellido_mat,
             edad: edad || user.edad,
             psw: psw ? hashedPassword : user.psw,
-            correo: correo || user.correo,
         });
 
         res.status(200).json({ message: 'Usuario actualizado correctamente', user });
@@ -228,7 +227,10 @@ exports.deleteUser = async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        await user.destroy();
+        await user.update({
+            status: 0,
+        });
+
         res.status(200).json({ message: 'Usuario eliminado correctamente' });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar usuario: ' + error });

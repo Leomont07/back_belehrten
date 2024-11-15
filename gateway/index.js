@@ -6,14 +6,6 @@ const cors = require('cors'); // Importa el paquete cors
 const app = express();
 app.use(cors());
 
-
-// Configuración de CORS para permitir solicitudes desde el frontend
-app.use(cors({
-    origin: 'http://localhost:5173', // Cambia a la URL de tu frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
 // Configuración de morgan para registrar todas las peticiones al gateway
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
@@ -33,7 +25,7 @@ app.use('/users', createProxyMiddleware({
     target: 'http://localhost:3002', // Dirección del microservicio de usuarios
     changeOrigin: true,
     pathRewrite: {
-        '^/users': '/ususario', // Reescribe la ruta para el microservicio de usuarios
+        '^/users': '/', // Reescribe la ruta para el microservicio de usuarios
     },
 }));
 
