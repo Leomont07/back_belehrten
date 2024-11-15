@@ -108,6 +108,27 @@ exports.login = async (req, res) => {
     }
 };
 
+exports.logout = async (req, res) => {
+
+    const { id_usuario } = req.body;
+    const user = await User.findOne({ where: { id_usuario } });
+
+    try {
+        if (!id_usuario) {
+        return res.status(400).send({ message: 'ID de usuario no proporcionado.' });
+        }
+
+        await user.update({
+            isLogin: 0,
+        });
+
+        res.status(200).send({ message: 'Sesión cerrada correctamente.' });
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        res.status(500).send({ message: 'Error al cerrar sesión.' });
+    }
+};
+
 exports.restorePassword = async (req, res) => {
     try {
         const { correo } = req.body;
@@ -211,7 +232,7 @@ exports.updateUser = async (req, res) => {
             apellido_pat: apellido_pat || user.apellido_pat,
             apellido_mat: apellido_mat || user.apellido_mat,
             edad: edad || user.edad,
-            psw: psw ? hashedPassword : user.psw,
+            psw: user.psw === psw ? user.psw : hashedPassword,
         });
 
         res.status(200).json({ message: 'Usuario actualizado correctamente', user });
