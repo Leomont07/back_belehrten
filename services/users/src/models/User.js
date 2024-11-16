@@ -17,10 +17,10 @@ const User = sequelize.define('User', {
     psw: { type: DataTypes.STRING, allowNull: false },
     isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
     verificationToken: { type: DataTypes.STRING, allowNull: true },
-    tipo: { type: DataTypes.INTEGER, allowNull: false },
-    isLogin: { type: DataTypes.INTEGER, allowNull: false },
+    tipo: { type: DataTypes.INTEGER, allowNull: true, defaultValue: 1 },
+    isLogin: { type: DataTypes.INTEGER, allowNull: true, defaultValue: 0 },
     passwordToken: { type: DataTypes.STRING, allowNull: true },
-    status: { type: DataTypes.INTEGER, allowNull: false },
+    status: { type: DataTypes.INTEGER, allowNull: true },
 }, {
     tableName: 'usuario',
     timestamps: false 
