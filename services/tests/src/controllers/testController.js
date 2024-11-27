@@ -61,43 +61,63 @@ exports.finishBlock = async (req, res) => {
     }
 };
 
-
 exports.getAdaptiveQuestion = async (req, res) => {
     try {
         const { id_test } = req.body;
 
+        // Validación de entrada
         if (!id_test) {
             return res.status(400).json({ error: "ID de test no proporcionado." });
         }
 
+        // Obtener el test por ID
         const test = await Test.findByPk(id_test);
-
         if (!test) {
             return res.status(404).json({ error: "El test no existe." });
         }
 
-        // Contar el número de respuestas correctas
-        const correctas = await Respuesta.count({
-            where: {
-                id_test: id_test,
-                correcta: true
-            }
-        });
+        // Obtener el nivel de dificultad basado en las preguntas respondidas
+        const nivel_dificultad = await calculateDifficultyLevel(id_test, test.nivel_inicial);
 
-        // Determinar el nivel en base a las respuestas correctas
-        let nivel_dificultad = test.nivel_inicial;
-        if (correctas >= 8) {
-            nivel_dificultad = getNextLevel(test.nivel_inicial);  // Función que aumenta el nivel
-        }
-
+        // Generar la pregunta
         const question = await generateQuestion(nivel_dificultad);
 
         res.status(200).json({ question });
     } catch (error) {
-        res.status(500).json({ error: 'Error al generar pregunta adaptativa: ' + error });
+        res.status(500).json({ error: 'Error al generar pregunta adaptativa: ' + error.message });
     }
 };
 
+// Función auxiliar para calcular el nivel de dificultad
+const calculateDifficultyLevel = async (id_test, nivel_inicial) => {
+    // Contar la cantidad de preguntas respondidas (no necesariamente correctas)
+    const preguntasRespondidas = await Respuesta.count({
+        where: { id_test: id_test }
+    });
+
+    // Determinar el bloque actual en base a las preguntas respondidas (cada 4 preguntas)
+    const bloqueActual = Math.floor(preguntasRespondidas / 4);  // Dividimos entre 4 para determinar el bloque
+
+    // Contar las respuestas correctas en el test
+    const respuestasCorrectas = await Respuesta.count({
+        where: { id_test: id_test, correcta: true }
+    });
+
+    // Lógica para aumentar el nivel cada 4 preguntas correctamente respondidas
+    // Por cada bloque de 4 preguntas respondidas correctamente, aumentamos el nivel
+    let nivelActual = nivel_inicial;
+    
+    // Revisamos por cada bloque completado si las 4 respuestas fueron correctas
+    for (let i = 1; i <= bloqueActual; i++) {
+        // Si el bloque i tiene 4 respuestas correctas
+        if (respuestasCorrectas >= i * 4) {
+            nivelActual = getNextLevel(nivelActual);  // Aumentamos el nivel
+        }
+    }
+
+    // Retornar el nivel actualizado basado en las respuestas correctas en cada bloque
+    return nivelActual;
+};
 
 
 // Finalizar el test y generar resultado
