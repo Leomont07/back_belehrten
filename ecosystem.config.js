@@ -4,28 +4,28 @@ module.exports = {
       name: "gateway",
       script: "./gateway/index.js",
       env: {
-        PORT: 3000
+       GATEWAY_PORT: process.env.GATEWAY_PORT,
       }
     },
     {
       name: "auth-service",
       script: "./services/auth/index.js",
       env: {
-        PORT: 3001
+       AUTH_PORT: process.env.AUTH_PORT,
       }
     },
     {
       name: "users-service",
       script: "./services/users/index.js",
       env: {
-        PORT: 3002
+       USER_PORT: process.env.USER_PORT,
       }
     },
     {
       name: "tests-service",
       script: "./services/tests/index.js",
       env: {
-        PORT: 3003
+       TESTS_PORT: process.env.TESTS_PORT,
       }
     },
   ]

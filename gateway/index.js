@@ -17,7 +17,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 
 // Servicio de autenticación (auth)
 app.use('/', createProxyMiddleware({
-    target: 'http://localhost:3001', // Dirección del microservicio de autenticación
+    target: `http://localhost:${process.env.AUTH_PORT}`, // Dirección del microservicio de autenticación
     changeOrigin: true,
     pathRewrite: {
         '^/auth': '/',  // Reescribir la ruta para el microservicio de autenticación
@@ -26,7 +26,7 @@ app.use('/', createProxyMiddleware({
 
 // Servicio de usuarios (users)
 app.use('/users', createProxyMiddleware({
-    target: 'http://localhost:3002', // Dirección del microservicio de usuarios
+    target: `http://localhost:${process.env.USER_PORT}`, // Dirección del microservicio de usuarios
     changeOrigin: true,
     pathRewrite: {
         '^/users': '/',  // Reescribir la ruta para el microservicio de usuarios
@@ -35,7 +35,7 @@ app.use('/users', createProxyMiddleware({
 
 // Servicio de tests (tests)
 app.use('/tests', createProxyMiddleware({
-    target: 'http://localhost:3003', // Dirección del microservicio de tests
+    target: `http://localhost:${process.env.TESTS_PORT}`, // Dirección del microservicio de tests
     changeOrigin: true,
     pathRewrite: {
         '^/tests': '/',  // Reescribir la ruta para el microservicio de tests
