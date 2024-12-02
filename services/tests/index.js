@@ -1,7 +1,6 @@
 const express = require('express');
 require('dotenv').config();
 const app = express();
-const PORT = 3003;
 const testRoutes = require('./src/routes/testRoutes');
 const respuestaRoutes = require('./src/routes/respuestaRoutes');
 const sequelize = require('./config/database');
@@ -17,6 +16,7 @@ sequelize.authenticate()
     .then(() => console.log('Conexión a la base de datos exitosa'))
     .catch(err => console.error('Error al conectar con la base de datos:', err));
 
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
     console.log(`Service running on port ${PORT}`);
 });
