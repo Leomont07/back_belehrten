@@ -3,6 +3,7 @@ require('dotenv').config();
 const app = express();
 const authRoutes = require('./src/routes/authRoutes');
 const sequelize = require('./config/database');
+const port = process.env.PORT || 3001;
 
 app.use(express.json());
 
@@ -15,7 +16,6 @@ sequelize.authenticate()
     .then(() => console.log('Conexión a la base de datos exitosa'))
     .catch(err => console.error('Error al conectar con la base de datos:', err));
 
-const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Auth Service running on port ${port}`);
 });
