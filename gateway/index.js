@@ -16,7 +16,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 // Configuración de los proxies para los microservicios
 
 // Servicio de autenticación (auth)
-app.use('/auth', createProxyMiddleware({
+app.use('/', createProxyMiddleware({
     target: 'http://localhost:3001', // Dirección del microservicio de autenticación
     changeOrigin: true,
     pathRewrite: {
