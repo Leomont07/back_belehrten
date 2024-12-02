@@ -17,7 +17,7 @@ const getNextLevel = (nivel_inicial) => {
 // Crear un nuevo test
 exports.test = async (req, res) => {
     try {
-        res.status(200).json({ message: 'Servicio de tests corriendo de manera correcta'});
+        res.status(200).json({ message: 'Servicio de test corriendo de manera correcta'});
     } catch (error) {
         res.status(500).json({ error: 'Error al registrar usuario' });
     }
