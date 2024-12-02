@@ -17,7 +17,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 
 // Servicio de autenticación (auth)
 app.use('/', createProxyMiddleware({
-    target: 'http://localhost:3001', // Dirección del microservicio de autenticación
+    target: 'https://back-belehrten.onrender.com/', // Dirección del microservicio de autenticación
     changeOrigin: true,
     pathRewrite: {
         '^/auth': '/',  // Reescribir la ruta para el microservicio de autenticación
@@ -26,7 +26,7 @@ app.use('/', createProxyMiddleware({
 
 // Servicio de usuarios (users)
 app.use('/users', createProxyMiddleware({
-    target: 'http://localhost:3002', // Dirección del microservicio de usuarios
+    target: 'https://back-belehrten.onrender.com/', // Dirección del microservicio de usuarios
     changeOrigin: true,
     pathRewrite: {
         '^/users': '/',  // Reescribir la ruta para el microservicio de usuarios
@@ -35,7 +35,7 @@ app.use('/users', createProxyMiddleware({
 
 // Servicio de tests (tests)
 app.use('/tests', createProxyMiddleware({
-    target: 'http://localhost:3003', // Dirección del microservicio de tests
+    target: 'https://back-belehrten.onrender.com/', // Dirección del microservicio de tests
     changeOrigin: true,
     pathRewrite: {
         '^/tests': '/',  // Reescribir la ruta para el microservicio de tests
@@ -50,5 +50,5 @@ app.use((err, req, res, next) => {
 
 // Servidor escuchando en el puerto 3000
 app.listen(3000, () => {
-    console.log('API Gateway corriendo en http://localhost:3000');
+    console.log('API Gateway corriendo en https://back-belehrten.onrender.com/');
 });
