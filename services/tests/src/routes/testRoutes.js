@@ -4,7 +4,6 @@ const respuestaController = require('../controllers/respuestaController');
 
 const router = express.Router();
 
-router.post('/', testController.test);
 router.post('/create', testController.createTest);
 router.post('/question', testController.getAdaptiveQuestion);
 router.post('/save', respuestaController.saveResponse);
