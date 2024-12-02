@@ -17,7 +17,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 
 // Servicio de autenticación (auth)
 app.use('/', createProxyMiddleware({
-    target: `http://localhost:${process.env.AUTH_PORT}`, // Dirección del microservicio de autenticación
+    target: `https://back-belehrten.onrender.com:${process.env.AUTH_PORT || 3001}`, // Dirección del microservicio de autenticación
     changeOrigin: true,
     pathRewrite: {
         '^/auth': '/',  // Reescribir la ruta para el microservicio de autenticación
@@ -26,7 +26,7 @@ app.use('/', createProxyMiddleware({
 
 // Servicio de usuarios (users)
 app.use('/users', createProxyMiddleware({
-    target: `http://localhost:${process.env.USER_PORT}`, // Dirección del microservicio de usuarios
+    target: `https://back-belehrten.onrender.com:${process.env.USER_PORT || 3002}`, // Dirección del microservicio de usuarios
     changeOrigin: true,
     pathRewrite: {
         '^/users': '/',  // Reescribir la ruta para el microservicio de usuarios
@@ -35,7 +35,7 @@ app.use('/users', createProxyMiddleware({
 
 // Servicio de tests (tests)
 app.use('/tests', createProxyMiddleware({
-    target: `http://localhost:${process.env.TESTS_PORT}`, // Dirección del microservicio de tests
+    target: `https://back-belehrten.onrender.com:${process.env.TESTS_PORT || 3003}`, // Dirección del microservicio de tests
     changeOrigin: true,
     pathRewrite: {
         '^/tests': '/',  // Reescribir la ruta para el microservicio de tests
@@ -48,7 +48,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Error al procesar la solicitud.' });
 });
 
-// Servidor escuchando en el puerto 3000
-app.listen(3000, () => {
-    console.log('API Gateway corriendo en http://localhost:3000');
+// Servidor escuchando en el puerto proporcionado por Render
+app.listen(process.env.PORT, () => {
+    console.log(`API Gateway corriendo en el puerto ${process.env.PORT}`);
 });
