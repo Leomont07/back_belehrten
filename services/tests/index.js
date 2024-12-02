@@ -16,7 +16,7 @@ sequelize.authenticate()
     .then(() => console.log('Conexión a la base de datos exitosa'))
     .catch(err => console.error('Error al conectar con la base de datos:', err));
 
-const PORT = process.env.PORT || 3003;
-app.listen(PORT, () => {
-    console.log(`Service running on port ${PORT}`);
+const port = process.env.PORT || 3003;
+app.listen(port, () => {
+    console.log(`Service running on port ${port}`);
 });
