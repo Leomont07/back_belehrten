@@ -1,7 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const app = express();
-const PORT = 3003;
+const PORT = 3004;
 const planEstudiosRoutes = require('./src/routes/planEstudiosRoutes');
 const sequelize = require('./config/database');
 app.use('/api/plan-estudios', planEstudiosRoutes);
