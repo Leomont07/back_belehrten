@@ -2,6 +2,7 @@ const Test = require('../models/Test');
 const Respuesta = require('../models/Respuesta');
 const Resultados = require('../models/Resultados');
 const { generateQuestion } = require('./preguntaController');
+const { generateResults } = require('./retroController')
 
 const getNextLevel = (nivel_inicial) => {
     switch (nivel_inicial) {
@@ -140,6 +141,7 @@ exports.finishTest = async (req, res) => {
             return res.status(404).json({ error: 'Test no encontrado' });
         }
 
+        // Actualizar los datos del test con la fecha de fin y el estado de completado
         await test.update({
             fecha_fin: new Date(),
             nivel_final,
@@ -148,6 +150,7 @@ exports.finishTest = async (req, res) => {
             estado: 'completado'
         });
 
+        // Crear un nuevo registro de resultados
         const resultado = await Resultados.create({
             id_test,
             nivel_final,
@@ -155,8 +158,14 @@ exports.finishTest = async (req, res) => {
             duracion: duracion_total
         });
 
-        res.status(200).json({ message: 'Test finalizado', resultado });
+        // Obtener la retroalimentación de habilidades
+        const retro = await generateResults(id_test);
+
+        // Responder con el resultado del test y la retroalimentación
+        res.status(200).json({ message: 'Test finalizado', retro });
     } catch (error) {
-        res.status(500).json({ error: 'Error al finalizar el test: ' + error });
+        res.status(500).json({ error: 'Error al finalizar el test: ' + error.message });
     }
 };
+
+

@@ -6,7 +6,8 @@ const Respuesta = sequelize.define('Respuesta', {
     id_test: { type: DataTypes.INTEGER },
     nivel_dificultad: { type: DataTypes.STRING },
     correcta: { type: DataTypes.TINYINT },
-    tiempo_respuesta: { type: DataTypes.DATE }
+    tiempo_respuesta: { type: DataTypes.DATE },
+    category: { type: DataTypes.STRING }
 }, {
     tableName: 'respuestas',
     timestamps: false

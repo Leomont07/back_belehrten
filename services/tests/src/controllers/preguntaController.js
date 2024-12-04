@@ -1,5 +1,8 @@
 const axios = require('axios');
 
+// Variable para almacenar las preguntas generadas
+let preguntasGeneradas = new Set();
+
 exports.generateQuestion = async (nivel_dificultad) => {
     try {
         const response = await axios.post(
@@ -13,6 +16,7 @@ exports.generateQuestion = async (nivel_dificultad) => {
 Question: <question>
 Options: <option 1>, <option 2>, <option 3>, <option 4>
 Correct Answer: <correct option>
+Category: Use one of the next habilities to categorize the questions:grammar, reading, production, vocabulary, elocuence.
 Do not include letterings (A, B, C, D) in the options. Ensure the correct answer is one of the four options. The options should be a comma-separated list.`
                     },
                     {
@@ -35,14 +39,16 @@ Do not include letterings (A, B, C, D) in the options. Ensure the correct answer
         const questionRegex = /Question:\s*(.*?)\n/;  // Captura la pregunta
         const optionsRegex = /Options:\s*([\s\S]+?)\s*Correct Answer:/; // Captura todas las opciones (en una cadena)
         const answerRegex = /Correct Answer:\s*(.*)/; // Captura la respuesta correcta
+        const categoryRegex = /Category:\s*(.*)/; // Captura la categoría
 
         // Aplicar las expresiones regulares
         const questionMatch = content.match(questionRegex);
         const optionsMatch = content.match(optionsRegex);
         const answerMatch = content.match(answerRegex);
+        const categoryMatch = content.match(categoryRegex);
 
         // Validar que las respuestas sean correctas
-        if (!questionMatch || !optionsMatch || !answerMatch) {
+        if (!questionMatch || !optionsMatch || !answerMatch || !categoryMatch) {
             throw new Error('El formato de la respuesta no es válido.');
         }
 
@@ -50,16 +56,26 @@ Do not include letterings (A, B, C, D) in the options. Ensure the correct answer
         const question = questionMatch[1].trim();  // Obtener la pregunta
         const optionsString = optionsMatch[1].trim();  // Obtener las opciones como una cadena
         const correctAnswer = answerMatch[1].trim();  // Obtener la respuesta correcta
+        const category = categoryMatch[1].trim(); // Obtener la categoría
+
+        // Comprobar si la pregunta ya ha sido generada
+        if (preguntasGeneradas.has(question)) {
+            return exports.generateQuestion(nivel_dificultad);  // Generar una nueva pregunta si ya existe
+        }
+
+        // Marcar la pregunta como generada
+        preguntasGeneradas.add(question);
 
         // Separar las opciones por coma y eliminar espacios innecesarios
         const options = optionsString.split(',').map(option => option.trim());
 
-        // Retornar el objeto estructurado con la pregunta, las opciones y la respuesta correcta
+        // Retornar el objeto estructurado con la pregunta, las opciones, la respuesta correcta y la categoría
         return {
             question: question,
             options: options,
             correctAnswer: correctAnswer,
             nivel_dificultad: nivel_dificultad,
+            category: category, // Incluir categoría
             content: content
         };
 
