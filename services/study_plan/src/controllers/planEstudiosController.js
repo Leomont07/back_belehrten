@@ -2,6 +2,7 @@ const PlanEstudios = require('../models/PlanEstudios');
 const PDFDocument = require('pdfkit');
 const fetch = require('node-fetch');
 const axios = require('axios');
+const { crearNotificacion } = require('../../../notifications/src/controllers/notificacionesController');
 
 exports.generatePlan = async (req, res) => {
     try {

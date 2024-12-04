@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const { crearNotificacion } = require('../../../notifications/src/controllers/notificacionesController');
 
 
 exports.users = async (req, res) => {
