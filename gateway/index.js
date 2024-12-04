@@ -56,6 +56,15 @@ app.use('/plan', createProxyMiddleware({
     },
 }));
 
+// Servicio de plan de notificaciones
+app.use('/notificacion', createProxyMiddleware({
+    target: 'http://localhost:3005', // Dirección del microservicio de plan
+    changeOrigin: true,
+    pathRewrite: {
+        '^/notificacion': '/',  // Reescribir la ruta para el microservicio de plan
+    },
+}));
+
 // Middleware para manejo de errores en los proxies
 app.use((err, req, res, next) => {
     console.error('Error en el proxy:', err);

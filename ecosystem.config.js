@@ -20,6 +20,10 @@ module.exports = {
         name: "plan-service",
         script: "./services/study_plan/index.js",
       },
+      {
+        name: "notifications-service",
+        script: "./services/notifications/index.js",
+      },
     ]
   };
   

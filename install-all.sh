@@ -30,6 +30,12 @@ cd users
 npm install
 cd ..
 
+# Instalando dependencias en NOTIFICACIONES
+echo "Instalando dependencias en notificaciones..."
+cd notifications
+npm install
+cd ..
+
 # Instalando dependencias en tests
 echo "Instalando dependencias en tests..."
 cd tests

@@ -77,6 +77,8 @@ También incluye recomendaciones generales para pasar al siguiente nivel.`;
         pdfDoc.text(contenidoPlan);
         pdfDoc.end();
 
+        await crearNotificacion(id_usuario, `Se generó un plan de estudios para el nivel ${nivel}.`);
+
     } catch (error) {
         console.error("Error al generar el plan de estudios:", error);
         res.status(500).json({ error: "Error al generar el plan de estudios: " + error.message });
@@ -110,6 +112,8 @@ exports.downloadPlan = async (req, res) => {
         if (!plan) {
             return res.status(404).json({ error: 'Plan de estudios no encontrado.' });
         }
+
+        await crearNotificacion(plan.id_usuario, `Se realizo la descarga del plan de estudios del dia: ${plan.fecha_generacion}.`);
 
         // Crear el PDF en memoria
         const pdfDoc = new PDFDocument();

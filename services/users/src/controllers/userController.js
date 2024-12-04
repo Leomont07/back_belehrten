@@ -194,6 +194,8 @@ exports.resetPassword = async (req, res) => {
             passwordToken: null,
         });
 
+        await crearNotificacion(user.id_usuario, "Se restableció la contraseña.");
+
         res.json({ message: 'Contraseña restablecida correctamente' });
     } catch (error) {
         res.status(500).json({ error: 'Error al restablecer la contraseña: ' + error.message });
@@ -234,6 +236,8 @@ exports.updateUser = async (req, res) => {
             edad: edad || user.edad,
             psw: user.psw === psw ? user.psw : hashedPassword,
         });
+
+        await crearNotificacion(id, "Se actualizó la información del usuario.");
 
         res.status(200).json({ message: 'Usuario actualizado correctamente', user });
     } catch (error) {
