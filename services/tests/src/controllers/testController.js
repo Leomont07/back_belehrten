@@ -159,12 +159,12 @@ exports.finishTest = async (req, res) => {
         });
 
         // Obtener la retroalimentación de habilidades
-        const retro = await generateResults(id_test);
+        const retro = await generateResults({ params: { id_test } });
 
         // Responder con el resultado del test y la retroalimentación
         res.status(200).json({ message: 'Test finalizado', retro });
     } catch (error) {
-        res.status(500).json({ error: 'Error al finalizar el test: ' + error.message });
+        res.status(500).json({ error: 'Hay un error al finalizar el test: ' + error.message });
     }
 };
 

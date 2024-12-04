@@ -6,29 +6,28 @@ const Resultados = require('../models/Resultados');
 // Variable para almacenar las preguntas generadas
 let resultadosGenerados = new Set();
 
-exports.generateResults = async (req, res) => {
+exports.generateResults = async (reqOrParams, res) => {
     try {
-        const { id_test } = req.params;
 
+        
+        const id_test = reqOrParams.params?.id_test || reqOrParams.id_test;
+        console.log('obteniendo datos test id: ' + id_test)
         // Obtener las respuestas correctas del test y sus categorías
+        console.log('obteniendo respuestas')
         const respuestasCorrectas = await Respuesta.findAll({
             where: {
                 id_test: id_test,
                 correcta: true
-            },
-            include: [
-                {
-                    model: Test,
-                    attributes: ['id_test']
-                }
-            ]
+            }
         });
-        
+        console.log('datos obtenidos')
         // Verifica si respuestasCorrectas tiene datos
         if (!respuestasCorrectas || respuestasCorrectas.length === 0) {
+            console.log('No se tuvieron respuesta correctas')
             return res.status(404).json({ error: 'No se encontraron respuestas correctas.' });
         }
 
+        console.log('Contando preguntas')
         // Contar el número de preguntas correctas por categoría
         const categoriaCount = {};
         respuestasCorrectas.forEach(respuesta => {
@@ -37,7 +36,7 @@ exports.generateResults = async (req, res) => {
                 categoriaCount[categoria] = (categoriaCount[categoria] || 0) + 1;
             }
         });
-
+        console.log('Preguntas contadas')
         // Crear el prompt para la API de ChatGPT
         const prompt = `You are an expert in generating skill charts. Based on the following data:
 Categories: ${JSON.stringify(categoriaCount)}. The keys are the categories (e.g., grammar, reading, etc.), and the values are the number of correct answers in each category.
@@ -45,6 +44,7 @@ Generate a set of variables suitable for creating a skill chart that represents 
 Include the total number of correct answers and how to display this on a graph.
 Ensure the variables can be used to visualize performance in a clear and actionable way.`;
 
+console.log('Solicitud a API')
         // Llamar a la API de ChatGPT con el prompt para obtener las variables para la gráfica
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
@@ -65,36 +65,36 @@ Ensure the variables can be used to visualize performance in a clear and actiona
             return res.status(500).json({ error: 'No se obtuvo respuesta válida de la API de ChatGPT.' });
         }
 
+        console.log('Extrayendo respuesta')
         // Extraer el contenido de la respuesta de la API
         const content = response.data.choices[0].message.content.trim();
         console.log('Respuestas correctas:', respuestasCorrectas);
         console.log('Respuesta de ChatGPT:', response.data);
         // Verificar si los resultados ya han sido generados
         if (resultadosGenerados.has(content)) {
-            return exports.generateResults(req, res);  // Generar nuevos resultados si ya existen
+            console.log('Resultado ya generado, regenerando...');
+            return exports.generateResults(reqOrParams, res); // Recursividad
         }
 
+        console.log('Generando resultados')
         // Marcar los resultados como generados
         resultadosGenerados.add(content);
 
         // Devolver las variables necesarias para la gráfica
-        res.status(200).json({
-            message: 'Datos para la gráfica generados correctamente.',
-            data: content
-        });
-
-    } catch (error) {
-        console.error('Error al generar los resultados: ', error);
-        // Manejo de errores detallado
-        if (error.response) {
-            console.error('Error de la API:', error.response.data);
-            res.status(500).json({ error: 'Error al generar los resultados: ' + error.response.data.error?.message || 'Respuesta no válida de la API.' });
-        } else if (error.request) {
-            console.error('Error en la solicitud:', error.request);
-            res.status(500).json({ error: 'Error al generar los resultados: No se recibió respuesta de la API.' });
+        if (res) {
+            res.status(200).json({
+                message: 'Datos para la gráfica generados correctamente.',
+                data: content
+            });
         } else {
-            console.error('Error desconocido:', error.message);
-            res.status(500).json({ error: 'Error al generar los resultados: ' + error.message });
+            return { message: 'Datos para la gráfica generados correctamente.', data: content };
+        }
+    } catch (error) {
+        console.error('Error al generar resultados:', error.message);
+        if (res) {
+            res.status(500).json({ error: 'Error al generar resultados: ' + error.message });
+        } else {
+            throw error; // Lanzar para manejo interno
         }
     }
 };
