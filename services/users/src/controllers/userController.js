@@ -52,7 +52,7 @@ const sendVerificationEmail = async (user, token) => {
         subject: 'Verificación de correo electrónico',
         html: `<p>Hola ${user.nombre},</p>
                <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
-               <a href="http://localhost:3000/users/verificar?token=${token}">Verificar correo</a>`
+               <a href="http://localhost:5173/verify?token=${token}">Verificar correo</a>`
     };
 
     await transporter.sendMail(mailOptions);
