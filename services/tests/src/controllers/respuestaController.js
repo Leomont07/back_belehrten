@@ -3,7 +3,7 @@ const Test = require('../models/Test');
 
 exports.saveResponse = async (req, res) => {
     try {
-        const { id_test, nivel_dificultad, respuesta_usuario, correcta } = req.body;
+        const { id_test, nivel_dificultad, respuesta_usuario, correcta, category } = req.body;
 
         console.log('Cuerpo de la solicitud:', req.body);
 
@@ -16,7 +16,8 @@ exports.saveResponse = async (req, res) => {
                 id_test,
                 nivel_dificultad: nivel_dificultad,
                 correcta: true,
-                tiempo_respuesta
+                tiempo_respuesta,
+                category: category
             });
             return res.status(201).json({ message: 'Respuesta correcta guardada', respuesta });
         } else {
@@ -24,7 +25,8 @@ exports.saveResponse = async (req, res) => {
                 id_test,
                 nivel_dificultad: nivel_dificultad,
                 correcta: false,
-                tiempo_respuesta
+                tiempo_respuesta,
+                category: category
             });
             return res.status(201).json({ message: 'Respuesta incorrecta guardada', respuesta });
         }
