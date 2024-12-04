@@ -82,3 +82,57 @@ También incluye recomendaciones generales para pasar al siguiente nivel.`;
         res.status(500).json({ error: "Error al generar el plan de estudios: " + error.message });
     }
 };
+
+
+exports.planes = async (req, res) => {
+    try {
+        const { id_usuario } = req.query;
+        const planes = await PlanEstudios.findAll({ where: { id_usuario } });
+        res.json(planes);
+    } catch (error) {
+        console.error("Error al consultar el planes de estudios:", error);
+        res.status(500).json({ error: "Error al al consultar de estudios: " + error.message });
+    }
+};
+
+exports.downloadPlan = async (req, res) => {
+    try {
+        const { id_plan } = req.query;
+
+        // Verificar si el ID del plan está presente
+        if (!id_plan) {
+            return res.status(400).json({ error: 'El ID del plan es obligatorio.' });
+        }
+
+        // Buscar el plan en la base de datos
+        const plan = await PlanEstudios.findByPk(id_plan);
+
+        if (!plan) {
+            return res.status(404).json({ error: 'Plan de estudios no encontrado.' });
+        }
+
+        // Crear el PDF en memoria
+        const pdfDoc = new PDFDocument();
+        let buffers = [];
+
+        pdfDoc.on('data', buffers.push.bind(buffers));
+        pdfDoc.on('end', () => {
+            const pdfData = Buffer.concat(buffers);
+
+            // Enviar el PDF al cliente
+            res.setHeader('Content-Disposition', `attachment; filename="plan_estudios_${id_plan}.pdf"`);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.send(pdfData);
+        });
+
+        // Agregar contenido al PDF
+        pdfDoc.fontSize(12).text(`Plan de Estudios - Nivel Inicial: ${plan.nivel_inicial} - Nivel Destino: ${plan.nivel_destino}`);
+        pdfDoc.moveDown();
+        pdfDoc.text(plan.contenido);
+        pdfDoc.end();
+
+    } catch (error) {
+        console.error("Error al descargar el plan de estudios:", error);
+        res.status(500).json({ error: "Error al descargar el plan de estudios: " + error.message });
+    }
+};
