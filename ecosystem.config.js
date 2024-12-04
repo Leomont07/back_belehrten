@@ -16,6 +16,10 @@ module.exports = {
         name: "tests-service",
         script: "./services/tests/index.js",
       },
+      {
+        name: "plan-service",
+        script: "./services/study_plan/index.js",
+      },
     ]
   };
   

@@ -18,20 +18,20 @@ cd services/auth
 npm install
 cd ..
 
-# Instalando dependencias en courses
-echo "Instalando dependencias en content..."
+# Instalando dependencias en plan
+echo "Instalando dependencias en plan..."
 cd study_plan
 npm install
 cd ..
 
-# Instalando dependencias en courses
+# Instalando dependencias en users
 echo "Instalando dependencias en users..."
 cd users
 npm install
 cd ..
 
-# Instalando dependencias en courses
-echo "Instalando dependencias en payments..."
+# Instalando dependencias en tests
+echo "Instalando dependencias en tests..."
 cd tests
 npm install
 cd ../..

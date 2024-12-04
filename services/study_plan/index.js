@@ -8,9 +8,9 @@ app.use('/api/plan-estudios', planEstudiosRoutes);
 
 app.use(express.json());
 
-app.use('/planEstudios', planEstudiosRoutes);
+app.use('/', planEstudiosRoutes);
 
-app.get('/run', (req, res) => res.send('Tests service is running'));
+app.get('/run', (req, res) => res.send('Plan service is running'));
 
 sequelize.authenticate()
     .then(() => console.log('Conexión a la base de datos exitosa'))

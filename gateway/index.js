@@ -47,6 +47,15 @@ app.use('/tests', createProxyMiddleware({
     },
 }));
 
+// Servicio de plan de estudio (study_plan)
+app.use('/plan', createProxyMiddleware({
+    target: 'http://localhost:3004', // Dirección del microservicio de plan
+    changeOrigin: true,
+    pathRewrite: {
+        '^/plan': '/',  // Reescribir la ruta para el microservicio de plan
+    },
+}));
+
 // Middleware para manejo de errores en los proxies
 app.use((err, req, res, next) => {
     console.error('Error en el proxy:', err);
