@@ -6,7 +6,7 @@ const Resultados = require('../models/Resultados');
 // Variable para almacenar las preguntas generadas
 let resultadosGenerados = new Set();
 
-exports.generateResults = async (reqOrParams, res) => {
+exports.generateResults = async (reqOrParams) => {
     try {
         const id_test = reqOrParams.params?.id_test || reqOrParams.id_test;
         console.log('Obteniendo datos del test con id:', id_test);
@@ -21,7 +21,7 @@ exports.generateResults = async (reqOrParams, res) => {
 
         if (!respuestasCorrectas || respuestasCorrectas.length === 0) {
             console.log('No se encontraron respuestas correctas.');
-            return res.status(404).json({ error: 'No se encontraron respuestas correctas.' });
+            return { error: 'No se encontraron respuestas correctas.', statusCode: 404 };
         }
 
         // Contar el número de respuestas correctas por categoría
@@ -58,12 +58,12 @@ Ensure the JSON is concise and clear.`;
                 temperature: 0.7
             },
             {
-                headers: { 'Authorization': `Bearer YOUR_API_KEY` }
+                headers: { 'Authorization': `Bearer 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` }
             }
         );
 
         if (!response.data || !response.data.choices || response.data.choices.length === 0) {
-            return res.status(500).json({ error: 'No se obtuvo respuesta válida de la API de ChatGPT.' });
+            return { error: 'No se obtuvo respuesta válida de la API de ChatGPT.', statusCode: 500 };
         }
 
         const content = JSON.parse(response.data.choices[0].message.content.trim());
@@ -71,15 +71,16 @@ Ensure the JSON is concise and clear.`;
         // Verificar si los resultados ya han sido generados
         if (resultadosGenerados.has(content)) {
             console.log('Resultado ya generado, regenerando...');
-            return exports.generateResults(reqOrParams, res);
+            return exports.generateResults(reqOrParams);
         }
 
         resultadosGenerados.add(content);
 
-        // Enviar la respuesta al frontend en el formato adecuado
-        res.status(200).json({
-            message: 'Datos para la gráfica generados correctamente.',
+        // Retornar los datos generados
+        return {
+            statusCode: 200,
             data: {
+                message: 'Datos para la gráfica generados correctamente.',
                 grammar: content.grammar || 0,
                 reading: content.reading || 0,
                 vocabulary: content.vocabulary || 0,
@@ -87,9 +88,9 @@ Ensure the JSON is concise and clear.`;
                 totalCorrect: content.totalCorrect,
                 level: content.level
             }
-        });
+        };
     } catch (error) {
         console.error('Error al generar resultados:', error.message);
-        res.status(500).json({ error: 'Error al generar resultados: ' + error.message });
+        return { error: 'Error al generar resultados: ' + error.message, statusCode: 500 };
     }
 };
