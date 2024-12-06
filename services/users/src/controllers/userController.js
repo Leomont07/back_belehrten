@@ -63,14 +63,12 @@ exports.verifyEmail = async (req, res) => {
     try {
         const { token } = req.query;
 
-        // Buscar al usuario por el token de verificación
         const user = await User.findOne({ where: { verificationToken: token } });
 
         if (!user) {
             return res.status(400).json({ error: 'Token de verificación inválido o expirado' });
         }
 
-        // Actualizar el estado de verificación del usuario
         user.isVerified = true;
         user.verificationToken = null;
         await user.save();
@@ -87,7 +85,6 @@ exports.login = async (req, res) => {
         const { correo, psw } = req.body;
         const user = await User.findOne({ where: { correo } });
 
-        // Verificar si el usuario existe y si la cuenta está verificada
         if (!user || !await bcrypt.compare(psw, user.psw)) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
@@ -139,14 +136,11 @@ exports.restorePassword = async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        // Generar un token de restablecimiento
         const resetToken = crypto.randomBytes(32).toString('hex');
 
-        // Guardar el token y su expiración en el usuario
         user.passwordToken = resetToken;
         await user.save();
 
-        // Configurar y enviar el correo con el enlace de restablecimiento
         const transporter = nodemailer.createTransport({
             host: 'smtp.ionos.mx',
             port: 587,
@@ -176,7 +170,6 @@ exports.resetPassword = async (req, res) => {
     try {
         const { token, psw } = req.body;
 
-        // Encontrar al usuario por el token y verificar que el token no ha expirado
         const user = await User.findOne({
             where: {
                 passwordToken: token,
@@ -189,7 +182,6 @@ exports.resetPassword = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(psw, 10);
 
-        // Actualizar la contraseña y eliminar el token de restablecimiento
         await user.update({
             psw: hashedPassword,
             passwordToken: null,
@@ -204,7 +196,6 @@ exports.resetPassword = async (req, res) => {
 };
 
 
-// Obtener todos los usuarios
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll();
@@ -214,7 +205,6 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Modificar usuario
 exports.updateUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -246,7 +236,6 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-// Eliminar usuario
 exports.deleteUser = async (req, res) => {
     try {
         const { id } = req.params;

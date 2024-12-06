@@ -9,7 +9,6 @@ app.use(express.json());
 
 app.use('/', notificacionesRoutes);
 
-// Define rutas del servicio
 app.get('/run', (req, res) => res.send('Notifications Service is running'));
 
 sequelize.authenticate()

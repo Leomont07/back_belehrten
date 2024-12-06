@@ -9,7 +9,6 @@ app.use(express.json());
 
 app.use('/', userRoutes);
 
-// Define rutas del servicio
 app.get('/run', (req, res) => res.send('Users Service is running'));
 
 sequelize.authenticate()

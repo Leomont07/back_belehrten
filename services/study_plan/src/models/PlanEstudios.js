@@ -7,7 +7,7 @@ const PlanEstudios = sequelize.define('PlanEstudios', {
     nivel_inicial: { type: DataTypes.STRING },
     nivel_destino: { type: DataTypes.STRING },
     fecha_generacion: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-    contenido: { type: DataTypes.TEXT } // JSON con el detalle del plan
+    contenido: { type: DataTypes.TEXT } 
 }, {
     tableName: 'planes_estudio',
     timestamps: false
