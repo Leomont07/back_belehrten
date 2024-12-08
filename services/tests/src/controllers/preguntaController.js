@@ -2,7 +2,7 @@ const axios = require('axios');
 
 let preguntasGeneradas = new Set();
 
-exports.generateQuestion = async (nivel_dificultad) => {
+exports.generateQuestion = async (nivel_dificultad, tipo) => {
     try {
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
@@ -11,16 +11,16 @@ exports.generateQuestion = async (nivel_dificultad) => {
                 messages: [
                     {
                         role: "system",
-                        content: `You are an adaptive English question generator. Always provide the question in the format:
-Question: <question>
-Options: <option 1>, <option 2>, <option 3>, <option 4>
-Correct Answer: <correct option>
-Category: Use one of the next habilities to categorize the questions:grammar, reading, production, vocabulary, elocuence.
-Do not include letterings (A, B, C, D) in the options. Ensure the correct answer is one of the four options. The options should be a comma-separated list.`
+                        content: `You are an adaptive English question generator for people who wants to learn english. Always provide the question in the format:
+                        Question: <question>
+                        Options: <option 1>, <option 2>, <option 3>, <option 4>
+                        Correct Answer: <correct option>
+                        Category: Use one the next habilities to categorize the question: ${tipo}.
+                        Do not include letterings (A, B, C, D) in the options. Ensure the correct answer is one of the four options. The options should be a comma-separated list.`
                     },
                     {
                         role: "user",
-                        content: `Generate an English question for level ${nivel_dificultad} with 4 answer options. Do not include letterings (A, B, C, D) in the options. The correct answer is one of the options.`
+                        content: `Generate an English question to be shown in an english test for level ${nivel_dificultad} with 4 answer options. Do not include letterings (A, B, C, D) in the options. The correct answer is one of the options.`
                     }
                 ],
                 max_tokens: 150,
@@ -53,7 +53,7 @@ Do not include letterings (A, B, C, D) in the options. Ensure the correct answer
         const category = categoryMatch[1].trim();
 
         if (preguntasGeneradas.has(question)) {
-            return exports.generateQuestion(nivel_dificultad); 
+            return exports.generateQuestion(nivel_dificultad, tipo); 
         }
 
         preguntasGeneradas.add(question);

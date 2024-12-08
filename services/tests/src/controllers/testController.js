@@ -15,6 +15,16 @@ const getNextLevel = (nivel_inicial) => {
     }
 };
 
+const getTipo = (tipo) => {
+    switch (tipo) {
+        case 'Grammar': return 'Reading';
+        case 'Reading': return 'Vocabulary';
+        case 'Vocabulary': return 'Elocuence';
+        case 'Elocuence': return 'Grammar';
+        default: return tipo;
+    }
+};
+
 exports.test = async (req, res) => {
     try {
         res.status(200).json({ message: 'Servicio de test corriendo de manera correcta'});
@@ -78,9 +88,27 @@ exports.getAdaptiveQuestion = async (req, res) => {
             return res.status(404).json({ error: "El test no existe." });
         }
 
-        const nivel_dificultad = await calculateDifficultyLevel(id_test, test.nivel_inicial);
+        let nivel_dificultad;
+        let tipo;
 
-        const question = await generateQuestion(nivel_dificultad);
+        const lastQuestion = await Respuesta.findOne({
+            where: { id_test },
+            order: [['id_respuesta', 'DESC']],
+        });
+        
+        console.log('Ultima: ' + JSON.stringify(lastQuestion));
+
+        if (!lastQuestion) {
+            nivel_dificultad = test.nivel_inicial;
+            tipo = await getTipo('Elocuence');
+        } else {
+            console.log('Inical de Ultima pregunta: ' + lastQuestion.nivel_dificultad)
+            nivel_dificultad = await calculateDifficultyLevel(id_test, lastQuestion.nivel_dificultad);
+            tipo = await getTipo(lastQuestion.category);
+        }
+
+
+        const question = await generateQuestion(nivel_dificultad, tipo);
 
         res.status(200).json({ question });
     } catch (error) {
@@ -88,27 +116,25 @@ exports.getAdaptiveQuestion = async (req, res) => {
     }
 };
 
-const calculateDifficultyLevel = async (id_test, nivel_inicial) => {
+const calculateDifficultyLevel = async (id_test, nivel_dificultad) => {
+    const preguntasPorBloque = 4;
 
-    const preguntasRespondidas = await Respuesta.count({
-        where: { id_test: id_test }
-    });
+    const preguntasRespondidas = await Respuesta.count({ where: { id_test, nivel_dificultad} });
+    const respuestasCorrectas = await Respuesta.count({ where: { id_test, correcta: true, nivel_dificultad } });
 
-    const bloqueActual = Math.floor(preguntasRespondidas / 4);
+    const bloqueActual = Math.floor(preguntasRespondidas / preguntasPorBloque);
 
-    const respuestasCorrectas = await Respuesta.count({
-        where: { id_test: id_test, correcta: true }
-    });
+    let nivelActual = nivel_dificultad;
 
-    let nivelActual = nivel_inicial;
-    
     for (let i = 1; i <= bloqueActual; i++) {
-        if (respuestasCorrectas >= i * 4) {
-            nivelActual = getNextLevel(nivelActual); 
+        if (respuestasCorrectas >= i * preguntasPorBloque) {
+            nivelActual = getNextLevel(nivelActual);
         }
     }
+
     return nivelActual;
 };
+
 
 exports.finishTest = async (req, res) => {
     try {

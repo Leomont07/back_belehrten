@@ -6,21 +6,22 @@ const { crearNotificacion } = require('../../../notifications/src/controllers/no
 
 exports.generatePlan = async (req, res) => {
     try {
-        const { grammar, listening, reading, vocabulary, nivel, id_usuario } = req.body;
+        const { grammar, elocuence, reading, vocabulary, nivel, id_usuario } = req.body;
+        console.log('Datos: ' + grammar, elocuence, reading, vocabulary, nivel, id_usuario)
 
-        if (![grammar, listening, reading, vocabulary].every(score => score >= 0 && score <= 10) || !nivel) {
+        if (![grammar, elocuence, reading, vocabulary].every(score => score >= 0 && score <= 10) || !nivel) {
             return res.status(400).json({ error: 'Datos inválidos. Asegúrese de que los puntajes estén entre 0 y 10 y el nivel sea válido (A1-C2).' });
         }
 
         const prompt = `Genera un plan de estudios personalizado para mejorar las habilidades de inglés de un usuario con el nivel ${nivel}. 
         Los resultados de las habilidades son:
         - Grammar: ${grammar}/10
-        - Listening: ${listening}/10
+        - Elocuence: ${elocuence}/10
         - Reading: ${reading}/10
         - Vocabulary: ${vocabulary}/10
 
         Identifica las áreas que necesitan más atención y sugiere recursos, ejercicios y estrategias específicas para cada habilidad. 
-        También incluye recomendaciones generales para pasar al siguiente nivel.`;
+        También incluye recomendaciones generales para pasar al siguiente nivel. Muestra la habilidad sefuida de la calificacion que obtuvo el usuario seguido de la demas información`;
 
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',

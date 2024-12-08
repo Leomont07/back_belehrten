@@ -35,7 +35,7 @@ exports.generateResults = async (reqOrParams) => {
         const prompt = `You are an expert in generating skill charts. Based on the following data:
         Categories: ${JSON.stringify(categoriaCount)}. The keys are the categories (e.g., grammar, reading, etc.), and the values are the number of correct answers in each category.
         Generate a JSON object that includes:
-        - grammar, reading, vocabulary, listening (or other relevant categories) as keys with their corresponding values.
+        - grammar, reading, vocabulary, elocuence (or other relevant categories) as keys with their corresponding values.
         - totalCorrect as the total number of correct answers.
         - level as a derived level based on performance.
         Ensure the JSON is concise and clear.`;
@@ -76,7 +76,7 @@ exports.generateResults = async (reqOrParams) => {
                 grammar: content.grammar || 0,
                 reading: content.reading || 0,
                 vocabulary: content.vocabulary || 0,
-                listening: content.listening || 0,
+                elocuence: content.elocuence || 0,
                 totalCorrect: content.totalCorrect,
                 level: content.level
             }
